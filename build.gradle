@@ -1,0 +1,58 @@
+plugins {
+    id 'java'
+}
+
+ext {
+    encoding = "UTF-8"
+    javaVersion = "1.8"
+    lombokVersion = "1.18.8"
+    junitVersion = "5.4.2"
+}
+group 'net.jjong'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = javaVersion
+targetCompatibility = javaVersion
+
+// set an explicit encoding for the Java compiler
+[compileJava, compileTestJava]*.options*.encoding = encoding
+
+repositories {
+    mavenCentral()
+}
+
+def lib = [
+        'compile' : [
+                "com.google.code.findbugs:jsr305:3.0.2"
+        ],
+        'provided' : [
+
+        ],
+        'test' : [
+                // Use JUnit test framework
+                "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
+                , "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
+                , "org.junit.platform:junit-platform-launcher:1.4.0"
+        ],
+        'runtime' : [
+                "com.h2database:h2:1.4.196"
+        ]
+]
+
+
+dependencies {
+    // lombok
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+    compileOnly "org.projectlombok:lombok:${lombokVersion}"
+    testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+    testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
+
+    compile lib.compile
+    compileOnly lib.provided
+    testCompile lib.test
+    runtime lib.runtime
+}
+
+subprojects {
+    apply from: "${project.getRootDir()}/unittest.gradle"
+}
